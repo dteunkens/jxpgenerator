@@ -5,20 +5,26 @@ var path = require('path');
 
 (function main() {
 	
+	var arguments = parseCommandLineArguments();
+	
+	var packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));	//Needed to get up to date info on - amongs others - version.
+	
 	var jxp = null;
-	var jxpFileName = null;
+	var jxpFileName = (arguments.name || packageJson.name) + '.jxp';
+	if(fs.existsSync(jxpFileName)) {
+		jxp = JSON.parse(fs.readFileSync(jxpFileName, 'utf8'));
+	}
 	
-	var packageJson = null;	//Needed to get up to date info on - amongs others - version.
-	
+	//Make sure no other jxp files (and corresponding exe files exist, to minimize confusion about what has recently been compiled)
 	var files = fs.readdirSync('./');
 	for(var index in files) {
 		var file = files[index];
-		if(path.extname(file) === ".jxp") {
-			jxpFileName = file;
-			jxp = JSON.parse(fs.readFileSync(file, 'utf8'));
-		}
-		else if(file === 'package.json') {
-			packageJson = JSON.parse(fs.readFileSync(file, 'utf8'))
+		if(path.extname(file) === ".jxp" && file !== jxpFileName) {
+			fs.unlinkSync(file);
+			var correspondingExeFile = path.basename(file, '.jxp') + '.exe';
+			if(fs.existsSync(correspondingExeFile)) {
+				fs.unlinkSync(correspondingExeFile);	
+			}
 		}
 	}
 	
@@ -31,8 +37,7 @@ var path = require('path');
 	}
 	
 	if(packageJson !== null) {
-		jxp.name = packageJson.name || 'app';
-		jxpFileName = jxp.name + '.jxp';
+		jxp.name = arguments.name || packageJson.name || 'app';
 		jxp.output = jxp.name + '.jx';
 		jxp.version = packageJson.version || 'build ' + new Date().toISOString();
 		jxp.author = packageJson.author || '';
@@ -52,7 +57,7 @@ var path = require('path');
 	function getAllRelevantNodeModulesFiles() {
 		
 		var relevantFiles = [];
-		var ignoreDirectories = parseCommandLineArguments().slim || [];
+		var ignoreDirectories = arguments.slim || [];
 		recursivelyCheckDirectoryForFilesWithExtensions('./', ignoreDirectories, ['.js', '.json']);
 		
 		function recursivelyCheckDirectoryForFilesWithExtensions(dirPath, ignoreDirectories, filterExtensions) {
@@ -81,7 +86,7 @@ var path = require('path');
 	}
 	
 	function parseCommandLineArguments() {
-		var arguments = { slim: [] };
+		var arguments = { slim: [], name: null };
 		
 		for (var i = 0, len = process.argv.length; i < len; ++i) {
 			var arg = process.argv[i];
@@ -96,11 +101,15 @@ var path = require('path');
 					++i;
 				}
 			}
+			else if(arg === '-name') {
+				if(++i >= len) {
+					break;
+				}
+				arguments.name = process.argv[i];
+			}
 		}
 		
 		return arguments;
 	}
 
 })();
-
-	
