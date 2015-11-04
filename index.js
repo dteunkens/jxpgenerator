@@ -46,7 +46,7 @@ var path = require('path');
 		jxp.copyright = packageJson.license || '';
 	}
 	
-	var jsAndJsonFiles = getAllRelevantNodeModulesFiles();
+	var jsAndJsonFiles = getAllRelevantNodeModulesFiles(arguments.ignore || []);
 	jxp.files = jsAndJsonFiles;
 	
 	var writeStream = fs.createWriteStream(jxpFileName);
@@ -54,10 +54,9 @@ var path = require('path');
 	
 	console.log('Wrote a jxp file with references to ' + jsAndJsonFiles.length + ' js and json files.')
 	
-	function getAllRelevantNodeModulesFiles() {
+	function getAllRelevantNodeModulesFiles(ignoreDirectories) {
 		
 		var relevantFiles = [];
-		var ignoreDirectories = arguments.ignore || [];
 		recursivelyCheckDirectoryForFilesWithExtensions('./', ignoreDirectories, ['.js', '.json']);
 		
 		function recursivelyCheckDirectoryForFilesWithExtensions(dirPath, ignoreDirectories, filterExtensions) {
