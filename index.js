@@ -57,7 +57,7 @@ var path = require('path');
 	function getAllRelevantNodeModulesFiles() {
 		
 		var relevantFiles = [];
-		var ignoreDirectories = arguments.slim || [];
+		var ignoreDirectories = arguments.ignore || [];
 		recursivelyCheckDirectoryForFilesWithExtensions('./', ignoreDirectories, ['.js', '.json']);
 		
 		function recursivelyCheckDirectoryForFilesWithExtensions(dirPath, ignoreDirectories, filterExtensions) {
@@ -86,7 +86,7 @@ var path = require('path');
 	}
 	
 	function parseCommandLineArguments() {
-		var arguments = { slim: [], name: null };
+		var arguments = { ignore: [], name: null };
 		
 		for (var i = 0, len = process.argv.length; i < len; ++i) {
 			var arg = process.argv[i];
@@ -97,7 +97,7 @@ var path = require('path');
 					if(argValue.charAt(0) === '-') {
 						break;
 					}
-					arguments.slim.push(argValue);
+					arguments.ignore.push(argValue);
 					++i;
 				}
 			}
