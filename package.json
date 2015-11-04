@@ -1,0 +1,13 @@
+{
+  "name": "jxpgenerator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "precompile": "node index.js",
+    "compile": "jx compile jxpgenerator.jxp"
+  },
+  "author": "Daniël Teunkens <dteunkens@quesd.com> (http://www.quesd.com)",
+  "license": "MIT",
+  "dependencies": {}
+}
