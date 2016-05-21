@@ -66,4 +66,4 @@ Lastly, run:
 npm run compile
 ```
 
-The result is an executable with the same same as you choose in `package.json`.
+The result is an executable with the same name as you choose in `package.json`.
